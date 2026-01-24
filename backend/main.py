@@ -1,9 +1,19 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from pydantic import BaseModel
 from backend.predict import predict_chlorophyll
 
 app = FastAPI(title="Ocean Intelligence ML API")
+
+# Add CORS middleware to allow frontend to communicate with backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 class ChlorophyllInput(BaseModel):
     depth: float
@@ -25,10 +35,17 @@ def predict(data: ChlorophyllInput):
 @app.post("/predict/csv")
 async def predict_from_csv(file: UploadFile = File(...)):
     df = pd.read_csv(file.file)
+    
+    # Normalize column names to lowercase and strip whitespace
+    df.columns = df.columns.str.lower().str.strip()
+    
+    print(f"DEBUG: Columns found in CSV: {list(df.columns)}")
 
     required_cols = {"depth", "salinity", "ph"}
     if not required_cols.issubset(df.columns):
-        return {"error": "CSV must contain depth, salinity, and ph columns"}
+        return {
+            "error": f"CSV must contain depth, salinity, and ph columns. Found: {list(df.columns)}"
+        }
 
     predictions = []
 
