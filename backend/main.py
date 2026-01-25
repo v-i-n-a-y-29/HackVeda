@@ -4,8 +4,8 @@ import pandas as pd
 from pydantic import BaseModel
 
 # ML logic imports
-from backend.predict import predict_chlorophyll
-from backend.sst_predict import forecast_sst_from_csv
+from predict import predict_chlorophyll
+from sst_predict import forecast_sst_from_csv
 
 # -----------------------------
 # App Initialization
