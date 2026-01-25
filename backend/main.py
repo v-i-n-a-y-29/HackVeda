@@ -1,14 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< Updated upstream
-from sst_predict import get_sst_forecast
 import pandas as pd
 from pydantic import BaseModel
-from predict import predict_chlorophyll
-=======
-from pydantic import BaseModel
-import pandas as pd
->>>>>>> Stashed changes
 
 # ML logic imports
 from backend.predict import predict_chlorophyll
