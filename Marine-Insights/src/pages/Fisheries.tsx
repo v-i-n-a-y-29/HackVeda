@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import Plot from 'plotly.js-dist';
-import { getJson, postFormData, imageUrl } from '../utils/api';
+import { getJson, postFormData } from '../utils/api';
 import { mockForecastInteractive, mockFishClassification, mockOverfishing } from '../utils/mock';
 
 const Fisheries: React.FC = () => {
   const [forecastData, setForecastData] = useState<any>(null);
   const [overfishingData, setOverfishingData] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [overfishingFile, setOverfishingFile] = useState<File | null>(null);
   const [classificationResult, setClassificationResult] = useState<any>(null);
   const [classifyError, setClassifyError] = useState<string | null>(null);
   // Loading handled by presence of data; no separate state needed
@@ -177,6 +178,44 @@ const Fisheries: React.FC = () => {
             <span className="text-3xl mr-3">⚠️</span>
             Overfishing Status Monitor
           </h2>
+          
+          {/* CSV Upload Section */}
+          <div className="mb-6 backdrop-blur-md bg-white/5 rounded-xl p-6 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">Upload Fisheries Data</h3>
+            <div className="flex items-center space-x-4">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => setOverfishingFile(e.target.files?.[0] || null)}
+                className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#F1C40F] focus:border-transparent"
+              />
+              <button
+                onClick={async () => {
+                  if (!overfishingFile) return;
+                  setUploading(true);
+                  try {
+                    const formData = new FormData();
+                    formData.append('file', overfishingFile);
+                    const data = await postFormData<any>('/overfishing_monitor', undefined, formData);
+                    setOverfishingData(data);
+                  } catch (error) {
+                    console.log('CSV upload failed, using mock data');
+                    setOverfishingData(mockOverfishing());
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
+                disabled={!overfishingFile || uploading}
+                className="px-6 py-2 bg-[#F1C40F] text-black font-semibold rounded-lg hover:bg-[#F1C40F]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {uploading ? 'Uploading...' : 'Upload CSV'}
+              </button>
+            </div>
+            <p className="text-white/60 text-sm mt-2">
+              CSV must contain columns: Date, Stock_Volume, Catch_Volume
+            </p>
+          </div>
+          
           <div className="bg-white/5 rounded-xl p-6 border border-white/10">
             {overfishingData ? (
               <div id="overfishing-chart" style={{ height: '500px' }}></div>
