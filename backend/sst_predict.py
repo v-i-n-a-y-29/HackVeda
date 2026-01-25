@@ -1,12 +1,36 @@
 import pandas as pd
-from pathlib import Path
+from prophet import Prophet
 
-SST_CSV_PATH = Path(__file__).parent / "sst_30step_forecast.csv"
+def forecast_sst_from_csv(df: pd.DataFrame, periods: int = 30):
+    """
+    Input CSV columns:
+    date,value
+    """
 
-def get_sst_forecast():
-    df = pd.read_csv(SST_CSV_PATH)
+    # Rename for Prophet
+    prophet_df = df.rename(columns={
+        "date": "ds",
+        "value": "y"
+    })
+
+    # Convert date & clean
+    prophet_df["ds"] = pd.to_datetime(prophet_df["ds"])
+    prophet_df = prophet_df.sort_values("ds")
+
+    # 🔥 IMPORTANT FIX
+    prophet_df = prophet_df.drop_duplicates(subset="ds")
+
+    # Train Prophet
+    model = Prophet()
+    model.fit(prophet_df)
+
+    # Future forecast
+    future = model.make_future_dataframe(periods=periods, freq="ME")
+    forecast = model.predict(future)
+
+    # Return clean output
+    result = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]]
 
     return {
-        "dates": df["ds"].astype(str).tolist(),
-        "sst": df["yhat"].tolist()
+        "forecast": result.to_dict(orient="records")
     }
