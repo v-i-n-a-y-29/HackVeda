@@ -10,9 +10,9 @@ def analyze_overfishing_from_csv(csv_path: str = None, df: pd.DataFrame = None):
     Returns Plotly chart data for overfishing monitoring.
     """
     # Load data from CSV or use provided DataFrame
-    if csv_path and not df:
+    if csv_path and df is None:
         df = pd.read_csv(csv_path)
-    elif not csv_path and not df:
+    elif csv_path is None and df is None:
         raise ValueError("Either csv_path or df must be provided")
 
     # Standardize column names
