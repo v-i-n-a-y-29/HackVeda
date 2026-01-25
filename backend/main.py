@@ -6,7 +6,8 @@ from pydantic import BaseModel
 # ML logic imports
 from predict import predict_chlorophyll
 from sst_predict import forecast_sst_from_csv
-from fish_classifier import load_model_and_labels, predict_fish_species
+# fish_classifier imports moved to lazy loading (only when endpoint is called)
+# This speeds up server reload significantly
 
 # -----------------------------
 # App Initialization
@@ -28,12 +29,14 @@ app.add_middleware(
 # -----------------------------
 # Startup Event
 # -----------------------------
-@app.on_event("startup")
-async def startup_event():
-    """Load ML models at application startup"""
-    print("🚀 Loading ML models...")
-    load_model_and_labels()
-    print("✅ All models loaded successfully!")
+# Commented out to prevent server hanging on startup
+# The fish classifier model will load lazily on first use
+# @app.on_event("startup")
+# async def startup_event():
+#     """Load ML models at application startup"""
+#     print("🚀 Loading ML models...")
+#     load_model_and_labels()
+#     print("✅ All models loaded successfully!")
 
 # -----------------------------
 # Input Models
@@ -196,6 +199,9 @@ async def classify_fish_species(file: UploadFile = File(...)):
     import io
     
     try:
+        # Lazy import to avoid loading heavy PyTorch on every reload
+        from fish_classifier import predict_fish_species
+        
         # Read image file
         image_bytes = await file.read()
         image = Image.open(io.BytesIO(image_bytes))
