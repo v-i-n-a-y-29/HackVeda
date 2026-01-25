@@ -59,20 +59,20 @@ const Fisheries: React.FC = () => {
       // Primary endpoint per documentation
       const result = await postFormData<any>('/predict/fish_species', undefined, formData);
       const confidenceStr = typeof result.confidence === 'number' ? `${result.confidence.toFixed(2)}%` : result.confidence;
-      setClassificationResult({ species: result.species, confidence: confidenceStr });
+      setClassificationResult({ ...result, species: result.species, confidence: confidenceStr });
       setClassifyError(null);
     } catch (error) {
       // Attempt known alternative routes present in the backend
       try {
         const result = await postFormData<any>('/classify/fish', undefined, formData);
         const confidenceStr = typeof result.confidence === 'number' ? `${result.confidence.toFixed(2)}%` : result.confidence;
-        setClassificationResult({ species: result.predicted_class || result.species, confidence: confidenceStr });
+        setClassificationResult({ ...result, species: result.predicted_class || result.species, confidence: confidenceStr });
         setClassifyError(null);
       } catch (e2) {
         try {
           const result = await postFormData<any>('/api/v1/fish/classify', undefined, formData);
           const confidenceStr = typeof result.confidence === 'number' ? `${result.confidence.toFixed(2)}%` : result.confidence;
-          setClassificationResult({ species: result.predicted_class || result.species, confidence: confidenceStr });
+          setClassificationResult({ ...result, species: result.predicted_class || result.species, confidence: confidenceStr });
           setClassifyError(null);
         } catch (e3) {
           // Seamless mock fallback
@@ -346,7 +346,10 @@ const Fisheries: React.FC = () => {
                   <div className="bg-white/10 rounded-lg p-4 border border-white/10">
                     <h5 className="font-semibold text-white mb-2">Species Information</h5>
                     <p className="text-white/70 text-sm">
-                      Classification completed using advanced machine learning models trained on marine species datasets.
+                      <h5 className="font-semibold text-white mb-2">Species Insight (RAG Agent)</h5>
+                      <div className="text-white/70 text-sm whitespace-pre-line max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                        {classificationResult.conservation_status || "No additional insights available."}
+                      </div>
                     </p>
                   </div>
                 </div>

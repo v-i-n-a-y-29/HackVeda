@@ -209,6 +209,20 @@ async def classify_fish_species(file: UploadFile = File(...)):
         # Make prediction
         result = predict_fish_species(image)
         
+        # RAG Integration: Get Conservation Status
+        try:
+            from rag.rag_engine import run_fisheries_agent
+            species = result.get("species", "Unknown")
+            if species and species != "Unknown" and species != "Error":
+                print(f"🔎 Running RAG for: {species}")
+                insight = run_fisheries_agent(f"What is the conservation status, habitat, and key characteristics of {species}?")
+                result["conservation_status"] = insight
+            else:
+                result["conservation_status"] = "No species identified for conservation search."
+        except Exception as e:
+            print(f"⚠️ RAG Agent Error: {str(e)}")
+            result["conservation_status"] = "Conservation status currently unavailable."
+
         return result
         
     except Exception as e:
