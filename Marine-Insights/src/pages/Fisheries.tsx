@@ -1,8 +1,39 @@
 import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import Plotly from 'plotly.js-dist';
-import { getJson, postFormData } from '../utils/api';
+import { postFormData } from '../utils/api';
 import { mockFishClassification } from '../utils/mock';
+
+// Skeleton Loader Component
+const SkeletonLoader: React.FC<{ lines?: number }> = ({ lines = 3 }) => (
+  <div className="space-y-3 animate-pulse">
+    {Array.from({ length: lines }).map((_, i) => (
+      <div key={i} className="h-4 bg-white/20 rounded-full" style={{ width: `${100 - i * 10}%` }}></div>
+    ))}
+  </div>
+);
+
+// Status Badge Component
+const StatusBadge: React.FC<{ status: 'CRITICAL' | 'SUSTAINABLE' | 'WARNING' }> = ({ status }) => {
+  const styles = {
+    CRITICAL: 'bg-red-500/30 border-red-400/50 text-red-200',
+    SUSTAINABLE: 'bg-green-500/30 border-green-400/50 text-green-200',
+    WARNING: 'bg-yellow-500/30 border-yellow-400/50 text-yellow-200'
+  };
+
+  const icons = {
+    CRITICAL: '🚨',
+    SUSTAINABLE: '✅',
+    WARNING: '⚠️'
+  };
+
+  return (
+    <div className={`inline-flex items-center px-4 py-2 rounded-full border ${styles[status]} font-semibold text-sm`}>
+      <span className="mr-2">{icons[status]}</span>
+      {status}
+    </div>
+  );
+};
 
 const Fisheries: React.FC = () => {
 
@@ -11,13 +42,12 @@ const Fisheries: React.FC = () => {
   const [overfishingFile, setOverfishingFile] = useState<File | null>(null);
   const [classificationResult, setClassificationResult] = useState<any>(null);
   const [classifyError, setClassifyError] = useState<string | null>(null);
-  // Loading handled by presence of data; no separate state needed
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [agentInsights, setAgentInsights] = useState<any>(null);
   const [showInsights, setShowInsights] = useState(false);
-
-  // Removed automatic data loading - graph will only show after CSV upload
+  const [isProcessingAgent, setIsProcessingAgent] = useState(false);
+  const [isProcessingClassification, setIsProcessingClassification] = useState(false);
 
   useEffect(() => {
     if (!selectedFile) {
@@ -30,8 +60,6 @@ const Fisheries: React.FC = () => {
     return () => URL.revokeObjectURL(url);
   }, [selectedFile]);
 
-
-
   useEffect(() => {
     if (overfishingData) {
       Plotly.newPlot('overfishing-chart', overfishingData.data, overfishingData.layout, {
@@ -40,7 +68,6 @@ const Fisheries: React.FC = () => {
       });
     }
   }, [overfishingData]);
-
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,6 +81,7 @@ const Fisheries: React.FC = () => {
     if (!selectedFile) return;
 
     setUploading(true);
+    setIsProcessingClassification(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
 
@@ -102,6 +130,7 @@ const Fisheries: React.FC = () => {
       setClassifyError(null);
     } finally {
       setUploading(false);
+      setIsProcessingClassification(false);
     }
   };
 
@@ -150,7 +179,9 @@ const Fisheries: React.FC = () => {
                 onClick={async () => {
                   if (!overfishingFile) return;
                   setUploading(true);
+                  setIsProcessingAgent(true);
                   setOverfishingData(null); // Clear previous data
+                  setAgentInsights(null);
                   try {
                     const formData = new FormData();
                     formData.append('file', overfishingFile);
@@ -188,6 +219,7 @@ const Fisheries: React.FC = () => {
                     alert('Failed to upload CSV. Please check the file format and try again.');
                   } finally {
                     setUploading(false);
+                    setIsProcessingAgent(false);
                   }
                 }}
                 disabled={uploading}
@@ -196,7 +228,7 @@ const Fisheries: React.FC = () => {
                 {uploading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
-                    Analyzing...
+                    Analyzing with AI Agents...
                   </div>
                 ) : (
                   'Analyze Overfishing Data'
@@ -297,71 +329,144 @@ const Fisheries: React.FC = () => {
             );
           })()}
 
-          {/* AI Insights Section - NEW */}
-          {agentInsights && agentInsights.is_overfishing && (
-            <div className="mt-6 backdrop-blur-md bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-6 border border-red-400/30">
-              <button
-                onClick={() => setShowInsights(!showInsights)}
-                className="w-full flex items-center justify-between text-left"
-              >
+
+          {/* Processing Skeleton Loader */}
+          {isProcessingAgent && !agentInsights && (
+            <div className="mt-6 backdrop-blur-md bg-white/10 rounded-xl p-6 border border-white/20">
+              <div className="flex items-center mb-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#F1C40F] mr-3"></div>
+                <h3 className="text-lg font-semibold text-white">AI Agent Processing Documents...</h3>
+              </div>
+              <p className="text-white/60 text-sm mb-4">Reading FAO reports and legal documents from vector database</p>
+              <SkeletonLoader lines={4} />
+            </div>
+          )}
+
+          {/* Enhanced AI Insights Panel */}
+          {agentInsights && (
+            <div className="mt-6 backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-8 border border-white/20 shadow-2xl">
+              {/* Header with Status Badge */}
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                  <span className="text-2xl mr-3">🤖</span>
+                  <span className="text-3xl mr-3">🤖</span>
                   <div>
-                    <h3 className="text-xl font-bold text-white">AI Agentic Insights</h3>
-                    <p className="text-white/70 text-sm">Click to view FAO regulations & legal consequences</p>
+                    <h3 className="text-2xl font-bold text-white">AI Agentic Insights</h3>
+                    <p className="text-white/60 text-sm">Powered by RAG + Multi-Agent System</p>
                   </div>
                 </div>
-                <span className="text-2xl text-white transition-transform duration-300" style={{ transform: showInsights ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                  ▼
-                </span>
-              </button>
+                <StatusBadge status={agentInsights.is_overfishing ? 'CRITICAL' : 'SUSTAINABLE'} />
+              </div>
 
-              {showInsights && (
-                <div className="mt-6 space-y-4 animate-fadeIn">
-                  {/* Status Banner */}
-                  <div className="bg-red-500/30 border border-red-400/50 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <span className="text-3xl mr-3">⚠️</span>
-                      <div>
-                        <h4 className="text-lg font-bold text-white">{agentInsights.status}</h4>
-                        <p className="text-white/80 text-sm">
-                          Catch Volume: {agentInsights.catch_volume?.toLocaleString()} exceeds threshold of {agentInsights.threshold?.toLocaleString()} ({agentInsights.catch_percentage}% of stock)
+              {/* Sustainability Status Card */}
+              <div className={`rounded-xl p-6 mb-6 border-2 ${agentInsights.is_overfishing
+                ? 'bg-red-500/20 border-red-400/50'
+                : 'bg-green-500/20 border-green-400/50'
+                }`}>
+                <div className="flex items-start">
+                  <span className="text-4xl mr-4">{agentInsights.is_overfishing ? '⚠️' : '✅'}</span>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-white mb-2">
+                      {agentInsights.status || (agentInsights.is_overfishing ? 'OVERFISHING DETECTED' : 'SUSTAINABLE FISHING')}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                      <div className="bg-white/10 rounded-lg p-3">
+                        <p className="text-white/60 text-xs mb-1">Catch Volume</p>
+                        <p className="text-white font-bold text-lg">{agentInsights.catch_volume?.toLocaleString() || 'N/A'}</p>
+                      </div>
+                      <div className="bg-white/10 rounded-lg p-3">
+                        <p className="text-white/60 text-xs mb-1">Threshold (20% of Stock)</p>
+                        <p className="text-white font-bold text-lg">{agentInsights.threshold?.toLocaleString() || 'N/A'}</p>
+                      </div>
+                      <div className="bg-white/10 rounded-lg p-3">
+                        <p className="text-white/60 text-xs mb-1">Catch Percentage</p>
+                        <p className={`font-bold text-lg ${agentInsights.is_overfishing ? 'text-red-300' : 'text-green-300'}`}>
+                          {agentInsights.catch_percentage || 'N/A'}
                         </p>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
 
+              {/* Legal Warning Section - Only show if overfishing */}
+              {agentInsights.is_overfishing && (
+                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-6 mb-6 border border-orange-400/30">
+                  <div className="flex items-start">
+                    <span className="text-3xl mr-3">⚖️</span>
+                    <div>
+                      <h4 className="text-lg font-bold text-orange-200 mb-2">Legal Warning</h4>
+                      <p className="text-white/80 text-sm leading-relaxed">
+                        Current fishing practices exceed sustainable thresholds as defined by FAO Code of Conduct for Responsible Fisheries.
+                        Continued overfishing may result in regulatory penalties, fishing quota reductions, or license suspension.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Expandable Mitigation Plan */}
+              <button
+                onClick={() => setShowInsights(!showInsights)}
+                className="w-full bg-white/10 hover:bg-white/15 rounded-xl p-4 mb-6 border border-white/20 transition-all duration-300 text-left"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">📋</span>
+                    <div>
+                      <h4 className="text-lg font-semibold text-white">View Mitigation Plan & FAO Regulations</h4>
+                      <p className="text-white/60 text-sm">Click to expand AI-generated recommendations</p>
+                    </div>
+                  </div>
+                  <span
+                    className="text-2xl text-white transition-transform duration-300"
+                    style={{ transform: showInsights ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    ▼
+                  </span>
+                </div>
+              </button>
+
+              {/* Expanded Insights */}
+              {showInsights && (
+                <div className="space-y-6 animate-fadeIn">
                   {/* RAG Insights from FAO Reports */}
                   {agentInsights.rag_insights && (
-                    <div className="bg-white/10 rounded-lg p-6 border border-white/20">
-                      <h4 className="text-lg font-semibold text-[#F1C40F] mb-3 flex items-center">
+                    <div className="bg-white/10 rounded-xl p-6 border border-white/20">
+                      <h4 className="text-lg font-semibold text-[#F1C40F] mb-4 flex items-center">
                         <span className="mr-2">📚</span>
                         FAO Regulations & Legal Consequences
                       </h4>
-                      <div className="text-white/80 text-sm whitespace-pre-line max-h-96 overflow-y-auto pr-2 custom-scrollbar leading-relaxed">
+                      <div className="text-white/80 text-sm whitespace-pre-line max-h-96 overflow-y-auto pr-2 custom-scrollbar leading-relaxed bg-black/20 rounded-lg p-4">
                         {agentInsights.rag_insights}
                       </div>
-                      <p className="text-white/50 text-xs mt-3">
-                        Source: FAO Reports, Legal Code of Conduct (i9540en.pdf), Global Standards
-                      </p>
+                      {/* Source Citation */}
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <div className="flex items-center text-white/50 text-xs">
+                          <span className="mr-2">🔗</span>
+                          <span className="font-semibold mr-2">Source:</span>
+                          <span>FAO Code of Conduct (i9540en.pdf), Global Fisheries Standards, Legal Database</span>
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {/* Recommendations */}
                   {agentInsights.recommendations && agentInsights.recommendations.length > 0 && (
-                    <div className="bg-white/10 rounded-lg p-6 border border-white/20">
-                      <h4 className="text-lg font-semibold text-[#2ECC71] mb-3 flex items-center">
+                    <div className="bg-white/10 rounded-xl p-6 border border-white/20">
+                      <h4 className="text-lg font-semibold text-[#2ECC71] mb-4 flex items-center">
                         <span className="mr-2">✅</span>
-                        Recommended Actions
+                        Recommended Mitigation Actions
                       </h4>
-                      <ul className="space-y-2">
+                      <div className="space-y-3">
                         {agentInsights.recommendations.map((rec: string, idx: number) => (
-                          <li key={idx} className="flex items-start text-white/80 text-sm">
-                            <span className="mr-2 text-[#2ECC71] font-bold">•</span>
-                            <span>{rec}</span>
-                          </li>
+                          <div key={idx} className="flex items-start bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors duration-200">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2ECC71]/30 flex items-center justify-center text-[#2ECC71] font-bold text-xs mr-3 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span className="text-white/80 text-sm leading-relaxed">{rec}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -425,13 +530,25 @@ const Fisheries: React.FC = () => {
                 <div className="bg-red-500/20 border border-red-400/30 text-red-200 rounded-lg p-4 mb-4">{classifyError}</div>
               )}
 
-              {classificationResult ? (
+              {/* Processing Skeleton Loader */}
+              {isProcessingClassification && !classificationResult && (
                 <div className="space-y-4">
-                  <div className="backdrop-blur-md bg-white/10 rounded-lg p-6 border border-white/20">
+                  <div className="flex items-center mb-4">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00C9D9] mr-3"></div>
+                    <p className="text-white/70 text-sm">AI Agent analyzing fish species...</p>
+                  </div>
+                  <SkeletonLoader lines={3} />
+                </div>
+              )}
+
+              {classificationResult ? (
+                <div className="space-y-6">
+                  {/* Main Classification Card */}
+                  <div className="backdrop-blur-md bg-white/10 rounded-xl p-6 border border-white/20">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
                       <div className="sm:col-span-1">
                         {previewUrl ? (
-                          <img src={previewUrl} alt="Uploaded fish" className="w-full h-40 object-cover rounded-lg border border-white/20" />
+                          <img src={previewUrl} alt="Uploaded fish" className="w-full h-40 object-cover rounded-lg border border-white/20 shadow-lg" />
                         ) : (
                           <div className="w-full h-40 flex items-center justify-center bg-white/5 rounded-lg border border-white/10">🐟</div>
                         )}
@@ -452,23 +569,81 @@ const Fisheries: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-white/10 rounded-lg p-4 border border-white/10">
-                    <h5 className="font-semibold text-white mb-2">Species Biological Information</h5>
-                    <div className="text-white/70 text-sm whitespace-pre-line max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                      {classificationResult.conservation_status || "No additional insights available."}
+
+                  {/* Scientific Profile Grid */}
+                  <div className="bg-white/10 rounded-xl p-6 border border-white/10">
+                    <h5 className="font-semibold text-white mb-4 flex items-center">
+                      <span className="mr-2">🔬</span>
+                      Scientific Profile
+                    </h5>
+
+                    {/* Information Grid Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      {/* Habitat Card */}
+                      <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg p-4 border border-blue-400/30">
+                        <div className="flex items-center mb-2">
+                          <span className="text-2xl mr-2">🌊</span>
+                          <h6 className="font-semibold text-white text-sm">Habitat</h6>
+                        </div>
+                        <p className="text-white/80 text-xs leading-relaxed">
+                          Marine waters, typically found in tropical and subtropical regions
+                        </p>
+                      </div>
+
+                      {/* Conservation Status Card */}
+                      <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg p-4 border border-green-400/30">
+                        <div className="flex items-center mb-2">
+                          <span className="text-2xl mr-2">🛡️</span>
+                          <h6 className="font-semibold text-white text-sm">Conservation Status</h6>
+                        </div>
+                        <p className="text-white/80 text-xs leading-relaxed">
+                          Varies by species - consult IUCN Red List for specific status
+                        </p>
+                      </div>
+
+                      {/* Commercial Value Card */}
+                      <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg p-4 border border-yellow-400/30">
+                        <div className="flex items-center mb-2">
+                          <span className="text-2xl mr-2">💰</span>
+                          <h6 className="font-semibold text-white text-sm">Commercial Value</h6>
+                        </div>
+                        <p className="text-white/80 text-xs leading-relaxed">
+                          Important for commercial fisheries and aquaculture
+                        </p>
+                      </div>
                     </div>
+
+                    {/* Detailed Biological Information */}
+                    <div className="bg-black/20 rounded-lg p-4">
+                      <h6 className="font-semibold text-white/90 text-sm mb-3">Biological Information</h6>
+                      <div className="text-white/70 text-sm whitespace-pre-line max-h-60 overflow-y-auto pr-2 custom-scrollbar leading-relaxed">
+                        {classificationResult.conservation_status || "No additional insights available."}
+                      </div>
+                    </div>
+
+                    {/* Source Citation */}
                     {classificationResult.data_source && (
-                      <p className="text-white/50 text-xs mt-2">
-                        Source: {classificationResult.data_source === 'fisheries_biology_collection' ? '🐟 Fisheries Biology Database' : 'Multi-Agent System'}
-                      </p>
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <div className="flex items-center text-white/50 text-xs">
+                          <span className="mr-2">🔗</span>
+                          <span className="font-semibold mr-2">Source:</span>
+                          <span>
+                            {classificationResult.data_source === 'fisheries_biology_collection'
+                              ? '🐟 Fisheries Biology Database (RAG)'
+                              : 'Multi-Agent Classification System'}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-white/50 py-12">
-                  <div className="text-4xl mb-4">🔍</div>
-                  <p>Upload an image to classify fish species</p>
-                </div>
+                !isProcessingClassification && (
+                  <div className="text-center text-white/50 py-12">
+                    <div className="text-4xl mb-4">🔍</div>
+                    <p>Upload an image to classify fish species</p>
+                  </div>
+                )
               )}
             </div>
           </div>
