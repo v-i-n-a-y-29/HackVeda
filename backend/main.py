@@ -184,18 +184,30 @@ async def analyze_overfishing_csv(file: UploadFile = File(...)):
         # Get visualization data
         viz_data = analyze_overfishing_from_csv(df=df)
         
-        # Use OverfishingAgent for AI-powered insights on first overfishing instance
+        # Use OverfishingAgent for AI-powered insights on the MOST SEVERE overfishing instance
         agent_insights = None
+        max_violation_margin = -1
+        
         for _, row in df.iterrows():
             telemetry = {
                 "date": row.get("date", row.get("Date", "Unknown")),
                 "stock_volume": row.get("stock_volume", row.get("Stock_Volume", 0)),
                 "catch_volume": row.get("catch_volume", row.get("Catch_Volume", 0))
             }
-            result = analyze_overfishing(telemetry)
-            if result.get("is_overfishing"):
-                agent_insights = result
-                break  # Only get insights for first overfishing instance
+            
+            # Use quick local check before calling full agent to save time
+            stock = telemetry["stock_volume"]
+            catch = telemetry["catch_volume"]
+            threshold = stock * 0.2
+            
+            if catch > threshold:
+                violation_margin = catch - threshold
+                
+                # Update if this is the most severe violation found so far
+                if violation_margin > max_violation_margin:
+                    max_violation_margin = violation_margin
+                    # Analyze this specific severe instance with the agent
+                    agent_insights = analyze_overfishing(telemetry)
         
         # Combine visualization data with agent insights
         return {

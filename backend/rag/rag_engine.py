@@ -46,23 +46,27 @@ def generate_fisheries_insight(user_query, collection="fisheries"):
     return chat_completion.choices[0].message.content
 
 
-def generate_overfishing_insight(user_query):
+def generate_overfishing_insight(user_query, search_query=None):
     """
     Uses Groq with Llama 3 to generate insights based on overfishing policy/legal data.
     
     Args:
-        user_query: Question about overfishing regulations, sustainability, legal consequences
+        user_query: The detailed prompt containing specific data scenario to be answered
+        search_query: Optional keywords for retrieval (if different from user_query)
     """
+    # Use specific search query if provided, otherwise use the user query
+    query_for_search = search_query if search_query else user_query
+    
     # Get context from overfishing ChromaDB
     context = search_context(
-        user_query,
+        query_for_search,
         db_path="./chroma_db_overfishing",
         collection_name=None  # Use default collection in overfishing DB
     )
     
     # Build the prompt
-    system_prompt = "You are a Fisheries Policy and Legal Expert. Use the provided context from FAO reports and legal documents to answer queries about overfishing regulations, sustainability practices, and legal consequences."
-    full_prompt = f"Context:\n{context}\n\nUser Query: {user_query}"
+    system_prompt = "You are a Fisheries Policy and Legal Expert. Use the provided context from FAO reports and legal documents to answer the specific scenario described."
+    full_prompt = f"Context:\n{context}\n\nScenario & Query: {user_query}"
 
     # Call Groq API
     chat_completion = client.chat.completions.create(

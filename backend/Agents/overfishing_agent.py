@@ -57,23 +57,33 @@ def analyze_overfishing(telemetry_data: dict) -> dict:
         print(f"⚠️ Overfishing detected on {date}: {catch_volume} > {threshold}")
         print("🔍 Searching overfishing policy database for insights...")
         
-        # Build comprehensive query for RAG
-        query = f"""
-        What are the legal consequences and regulations for overfishing when catch volume 
-        exceeds sustainable thresholds? What sustainability practices should be followed? 
-        What are alternative species that can be harvested instead?
+        # 1. Specific Scenario for LLM Analysis
+        prompt = f"""
+        ANALYSIS SCENARIO:
+        On date {date}, a fishery recorded a Stock Volume of {stock_volume} and a Catch Volume of {catch_volume}.
+        The Catch Volume was {catch_percentage}% of the total stock, which exceeds the sustainable threshold of 20%.
+        The excess catch occurred by a margin of {catch_volume - threshold} units.
+        
+        QUESTION:
+        Based on FAO regulations and legal codes of conduct:
+        1. What is the severity of a {catch_percentage}% catch rate (limit is 20%)?
+        2. What are the specific legal consequences or penalties for this level of overfishing?
+        3. What immediate sustainability corrective actions must be taken for this specific stock level?
         """
         
+        # 2. General Query for Retrieval (to find relevant docs)
+        search_query = "overfishing legal consequences penalties sustainable limits catch quotas FAO code of conduct"
+        
         try:
-            # Get insights from overfishing collection
-            rag_insights = generate_overfishing_insight(query)
+            # Get insights with specific prompt but general retrieval
+            rag_insights = generate_overfishing_insight(prompt, search_query=search_query)
             
             response["rag_insights"] = rag_insights
             response["recommendations"] = [
-                "Reduce catch volume immediately",
-                "Review FAO sustainable fishing guidelines",
-                "Consider alternative species with healthier stock levels",
-                "Implement catch monitoring systems"
+                f"Reduce catch volume by at least {int(catch_volume - threshold)} units immediately",
+                "Review FAO sustainable fishing guidelines for current stock levels",
+                "Implement catch monitoring systems",
+                "Consider alternative species"
             ]
         except Exception as e:
             print(f"❌ RAG query failed: {e}")
