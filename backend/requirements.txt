@@ -5,3 +5,13 @@ numpy
 joblib
 pandas
 prophet
+torch
+torchvision
+timm
+Pillow
+python-multipart
+groq
+langchain-chroma
+langchain-huggingface
+chromadb
+sentence-transformers
