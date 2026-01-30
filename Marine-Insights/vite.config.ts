@@ -7,10 +7,6 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://127.0.0.1:8000',
-      '/predict': 'http://127.0.0.1:8000',
-      '/orchestrate': 'http://127.0.0.1:8000',
-      '/auto_route': 'http://127.0.0.1:8000',
-      '/overfishing_monitor': 'http://127.0.0.1:8000',
     }
   }
 })

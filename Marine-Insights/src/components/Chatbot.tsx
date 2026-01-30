@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { buildUrl } from '../utils/api';
 
 interface Message {
     id: string;
@@ -43,8 +44,8 @@ const Chatbot: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || '/api';
-            const response = await fetch(`${apiUrl}/aws/fisheries-agent`, {
+            const url = buildUrl('/aws/fisheries-agent');
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

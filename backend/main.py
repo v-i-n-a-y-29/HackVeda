@@ -54,7 +54,7 @@ class ChlorophyllInput(BaseModel):
 # -----------------------------
 
 # 1️⃣ Chlorophyll Prediction – Single Input
-@app.post("/predict")
+@app.post("/api/predict")
 def predict_single(data: ChlorophyllInput):
     prediction = predict_chlorophyll(
         data.depth,
@@ -67,7 +67,7 @@ def predict_single(data: ChlorophyllInput):
 
 
 # 2️⃣ Chlorophyll Prediction – CSV Upload
-@app.post("/predict/csv")
+@app.post("/api/predict/csv")
 async def predict_chlorophyll_csv(file: UploadFile = File(...)):
     """
     CSV must contain columns:
@@ -103,7 +103,7 @@ async def predict_chlorophyll_csv(file: UploadFile = File(...)):
 
 
 # 3️⃣ SST Forecasting – CSV Upload (OPTION 2 ✅)
-@app.post("/predict/sst/csv")
+@app.post("/api/predict/sst/csv")
 async def predict_sst_csv(file: UploadFile = File(...)):
     """
     SST CSV must contain columns:
@@ -128,7 +128,7 @@ async def predict_sst_csv(file: UploadFile = File(...)):
 
 
 # 4️⃣ Helper Endpoint (for frontend clarity)
-@app.get("/predict/sst")
+@app.get("/api/predict/sst")
 def sst_info():
     return {
         "message": "Upload SST CSV to /predict/sst/csv with columns: date,value"
@@ -141,7 +141,7 @@ def sst_info():
 from Agents.orchestrator import orchestrate, auto_route
 from Agents.overfishing_agent import analyze_overfishing
 
-@app.post("/orchestrate")
+@app.post("/api/orchestrate")
 async def orchestrate_request(input_type: str, data: dict):
     """
     Multi-agent orchestrator endpoint.
@@ -153,14 +153,14 @@ async def orchestrate_request(input_type: str, data: dict):
     """
     return orchestrate(input_type, data)
 
-@app.post("/auto_route")
+@app.post("/api/auto_route")
 async def auto_route_request(data: dict):
     """
     Automatically detect input type and route to appropriate agent.
     """
     return auto_route(data)
 # 5️⃣ Overfishing Monitor - GET (Mock Data)
-@app.get("/overfishing_monitor")
+@app.get("/api/overfishing_monitor")
 def get_overfishing_data():
     """
     Returns sample overfishing monitoring data for testing.
@@ -171,7 +171,7 @@ def get_overfishing_data():
 
 
 # 6️⃣ Overfishing Monitor - CSV Upload (with Multi-Agent Integration)
-@app.post("/overfishing_monitor")
+@app.post("/api/overfishing_monitor")
 async def analyze_overfishing_csv(file: UploadFile = File(...)):
     """
     Analyze overfishing from CSV data using OverfishingAgent.
@@ -310,7 +310,7 @@ async def chat_about_edna_species(request: ChatRequest):
 
 
 # 8️⃣ Fish Species Classification - Image Upload (with Multi-Agent Integration)
-@app.post("/predict/fish_species")
+@app.post("/api/predict/fish_species")
 async def classify_fish_species(file: UploadFile = File(...)):
     """
     Classify fish species from an uploaded image using FisheriesAgent.
