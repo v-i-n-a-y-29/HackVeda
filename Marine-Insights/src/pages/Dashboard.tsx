@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
-import { Waves, Fish, Sprout, ArrowRight, Dna, Activity, Droplets, Zap } from 'lucide-react';
+import { Waves, Fish, Sprout, ArrowRight } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const container: Variants = {
@@ -68,10 +68,7 @@ const Dashboard: React.FC = () => {
         transition={{ duration: 0.8 }}
         className="text-center space-y-4"
       >
-        <div className="inline-flex items-center space-x-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 mb-2">
-          <Zap className="w-3 h-3 text-cyan-400 fill-current" />
-          <span className="text-[10px] uppercase tracking-widest text-cyan-100/70 py-0.5">System V2.0 Initialized</span>
-        </div>
+
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-2">
           MARINE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">INSIGHTS</span>
         </h1>
@@ -130,23 +127,7 @@ const Dashboard: React.FC = () => {
         ))}
       </motion.div>
 
-      {/* Footer Stats - Minimal */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="flex items-center space-x-8 text-white/30 text-xs uppercase tracking-widest"
-      >
-        <span className="flex items-center hover:text-cyan-400 transition-colors cursor-help">
-          <Activity className="w-3 h-3 mr-2" /> 99.9% Uptime
-        </span>
-        <span className="flex items-center hover:text-cyan-400 transition-colors cursor-help">
-          <Dna className="w-3 h-3 mr-2" /> v2.4.0 Stable
-        </span>
-        <span className="flex items-center hover:text-cyan-400 transition-colors cursor-help">
-          <Droplets className="w-3 h-3 mr-2" /> Secure Connection
-        </span>
-      </motion.div>
+
 
     </div>
   );

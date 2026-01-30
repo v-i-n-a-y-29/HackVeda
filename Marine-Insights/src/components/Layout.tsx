@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Waves, Fish, Sprout } from 'lucide-react';
+import { LayoutDashboard, Waves, Fish, Sprout, Compass } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -36,13 +36,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center space-x-3 group">
             <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 shadow-[0_0_15px_-3px_rgba(6,182,212,0.3)] group-hover:shadow-[0_0_25px_-5px_rgba(6,182,212,0.5)] transition-all duration-300">
-              <Waves className="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <Compass className="w-6 h-6 text-cyan-400 group-hover:rotate-45 transition-transform duration-500" />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-semibold tracking-tight text-white group-hover:text-cyan-100 transition-colors">
                 Marine Insights
               </span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-cyan-400/70">Neo Frontier</span>
             </div>
           </Link>
 
@@ -74,16 +73,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             })}
           </div>
 
-          {/* Status Indicator */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 px-4 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 shadow-[0_0_10px_-4px_rgba(16,185,129,0.3)]">
-              <div className="relative flex items-center justify-center w-2 h-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </div>
-              <span className="text-xs font-semibold text-emerald-400 tracking-wide">SYSTEM ONLINE</span>
-            </div>
-          </div>
+
         </div>
       </nav>
 
