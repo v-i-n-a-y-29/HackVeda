@@ -1,291 +1,227 @@
-Marine Insights 🌊
+🌊 Marine Insights
 Unified Ocean Intelligence through Multi-Agent AI & Retrieval-Augmented Generation
-Team ThinkTank AI Shubhangi Dimri, Vinay Semwal, Ananya Karn, Mridul Rawat
 
-Marine Insights is a production-grade Ocean Intelligence System that bridges the gap between raw data and actionable wisdom. By integrating Machine Learning, Agentic AI, and Serverless RAG via AWS Bedrock, we transform fragmented marine telemetry into a unified decision-support platform.
+Team ThinkTank AI
+Shubhangi Dimri · Vinay Semwal · Ananya Karn · Mridul Rawat
 
-🚀 The ThinkTank AI Vision
-Traditional models only predict numbers. Marine Insights adds an intelligence layer:
+🚀 Overview
 
-📊 Machine Learning: Predicts critical parameters like SST, chlorophyll, and fish species.
+Marine Insights is a production-grade Ocean Intelligence System that bridges the gap between raw marine telemetry and actionable intelligence.
 
-🤖 Agentic Orchestration: Autonomous agents interpret results and route tasks based on intent.
+By integrating Machine Learning, Agentic AI, and Serverless RAG on AWS Bedrock, the platform transforms fragmented ocean data into a unified decision-support system for fishermen, researchers, and regulators.
 
-📚 Partitioned RAG: Provides scientific and legal grounding using verified sources (FAO, IUCN).
+🧠 The ThinkTank AI Vision
 
-🌍 Actionable ROI: Outputs an "Economic Shield" for fishermen and sustainability plans for regulators.
+Traditional models only predict numbers.
+Marine Insights adds an intelligence layer.
+
+📊 Machine Learning
+
+Predicts Sea Surface Temperature (SST)
+
+Estimates Chlorophyll concentration
+
+Classifies Fish Species
+
+🤖 Agentic Orchestration
+
+Autonomous agents interpret ML outputs
+
+Routes tasks based on intent & context
+
+📚 Partitioned RAG
+
+Scientific grounding via FAO, IUCN, policy documents
+
+Prevents cross-domain hallucination
+
+🌍 Actionable ROI
+
+Generates Economic Shield insights for fishermen
+
+Produces sustainability & compliance plans for regulators
 
 🧠 System Architecture (Cloud-Native & Agentic)
-Code snippet
+Diagram
 graph TD
-    A[Frontend: React Dashboard] --> B[FastAPI Gateway]
-    B --> C{Orchestrator Agent 🤖}
-    C --> D[Fisheries Agent]
-    C --> E[Overfishing Agent]
-    C --> F[Ocean Analytics Agent]
-    
-    subgraph "AWS Bedrock Infrastructure"
-    D & E & F --> G[Amazon Nova Premier - Reasoning Engine]
-    G --> H[Knowledge Base: Partitioned RAG]
-    H --> I[Titan Text Embeddings V2]
-    end
-    
-    subgraph "ML Service Layer"
-    D & E & F --> J[EfficientNet-B0: Species Classification]
-    D & E & F --> K[Random Forest: Chlorophyll & SST]
-    end
+A[Frontend: React Dashboard] --> B[FastAPI Gateway]
+B --> C{Orchestrator Agent 🤖}
+
+C --> D[Fisheries Agent]
+C --> E[Overfishing Agent]
+C --> F[Ocean Analytics Agent]
+
+subgraph AWS Bedrock Infrastructure
+D & E & F --> G[Amazon Nova Premier<br/>Reasoning Engine]
+G --> H[Partitioned RAG Knowledge Base]
+H --> I[Titan Text Embeddings V2]
+end
+
+subgraph ML Service Layer
+D & E & F --> J[EfficientNet-B0<br/>Species Classification]
+D & E & F --> K[Random Forest<br/>Chlorophyll & SST]
+end
+
 🛠️ Tech Stack & AWS Integration
-Core AI Engine: AWS Bedrock
-Reasoning Engine: Powered by Amazon Nova Premier (amazon.nova-premier-v1:0) for advanced, multi-step agentic reasoning.
+Core AI Engine
 
-Embeddings: Amazon Titan Text Embeddings V2 (amazon.titan-embed-text-v2:0) ensures high-fidelity semantic search for the RAG pipeline.
+AWS Bedrock Reasoning Engine
 
-Security & Compliance: Fully integrated using the hackathon-bedrock-kb-role within the us-east-1 region for secure, serverless operation.
+Model: amazon.nova-premier-v1:0
 
-Vector Infrastructure: Partitioned RAG
-We utilize a Partitioned RAG Strategy to eliminate context cross-contamination:
+Supports multi-step agentic reasoning
 
-fisheries_kb: Biology, taxonomy, and habitat documents.
+Embeddings
 
-overfishing_kb: FAO regulations, legal codes, and sustainability frameworks.
+Amazon Titan Text Embeddings V2
+
+Model: amazon.titan-embed-text-v2:0
+
+High-fidelity semantic search for RAG
+
+Security & Compliance
+
+IAM Role: hackathon-bedrock-kb-role
+
+Region: us-east-1
+
+Fully serverless & secure
+
+🧠 Partitioned RAG Strategy
+
+To eliminate context cross-contamination, Marine Insights uses domain-isolated vector stores.
+
+Knowledge Bases
+
+fisheries_kb
+→ Biology, taxonomy, habitat data
+
+overfishing_kb
+→ FAO regulations, legal codes, sustainability frameworks
 
 🤖 Agentic Workflows
 1️⃣ Fisheries Intelligence Agent 🐟
-Specialized in species identification and biological context.
 
-Action: Analyzes image classification confidence (EfficientNet-B0) and retrieves conservation status (IUCN).
+Purpose: Species identification & biological reasoning
 
-Output: Unified report on species health and habitat suitability.
+Actions
+
+Analyzes EfficientNet-B0 confidence scores
+
+Retrieves conservation status via RAG (IUCN)
+
+Output
+
+Unified species health & habitat suitability report
 
 2️⃣ Sustainability & Overfishing Agent ⚖️
-Acts as an "Economic Shield" for fishing communities.
 
-Action: Monitors catch vs. stock volume against a 20% sustainability threshold.
+Purpose: Acts as an Economic Shield for fishing communities
 
-Output: Immediate legal alerts and corrective action plans based on international fisheries law.
+Actions
+
+Monitors catch vs stock volume
+
+Enforces 20% sustainability threshold
+
+Output
+
+Legal alerts
+
+Corrective action plans based on international fisheries law
 
 📂 Project Structure
-Plaintext
-backend/
-├── Agents/                     # Multi-Agent AI Layer (AWS Bedrock & Nova)
-│   ├── orchestrator.py         # Routing logic via Amazon Nova
-│   ├── fisheries_agent.py      # Biology-focused Agentic RAG
-│   └── overfishing_agent.py    # Policy-focused Agentic RAG
-├── services/                   # ML Inference Layer
-│   ├── fish_classifier.py      # EfficientNet-B0 Species ID
-│   ├── predict.py              # Chlorophyll ML Logic
-│   └── sst_predict.py          # SST Forecasting
-├── rag/                        # RAG Infrastructure
-│   ├── database/               # Persistent ChromaDB Stores
-│   └── src/                    # Titan V2 Embedding Logic
-└── main.py                     # FastAPI Entry Point
-📈 Impact & Performance
-⏱️ Efficiency: 80% reduction in manual data processing time (from weeks to <10 seconds).
-
-🎯 Accuracy: 28% boost in contextual accuracy through RAG-grounded reasoning.
-
-💰 Economic ROI: Real-time regulatory alerts prevent vessel seizures and catastrophic fines ($2,500+ per incident).
-
-⚙️ Quick Start
-1. Activate Environment
-
-Bash
-source .venv/bin/activate # Windows: .\.venv\Scripts\activate
-2. Configure AWS Credentials Ensure your environment is configured for the hackathon role:
-
-Bash
-export AWS_DEFAULT_REGION="us-east-1"
-export AWS_ROLE_ARN="arn:aws:iam::[ACC_ID]:role/hackathon-bedrock-kb-role"
-3. Launch Backend
-
-Bash
-uvicorn main:app --reload
-© 2026 Team ThinkTank AI | Designed for the AWS Bedrock Hackathon
-
-Frontend (React Dashboard)
-        ↓
-FastAPI Backend (API Layer)
-        ↓
-Orchestrator Agent 🤖
-        ↓
-------------------------------------------
-| Ocean Agent | Fisheries Agent | Biodiversity Agent |
-------------------------------------------
-        ↓
-RAG Knowledge Base (ChromaDB + Embeddings)
-        ↓
-ML Models (SST, Chlorophyll, Fish Classification)
-        ↓
-Explainable AI Insights
-```
-
----
-
-## 📂 Project Structure
-
-```text
 backend/
 ├── main.py                     # FastAPI entry point
 │
 ├── Agents/                     # Agentic AI Layer
-│   ├── orchestrator.py         # Routes requests to specialized agents
-│   ├── fisheries_agent.py      # Species analysis & biology RAG
-│   └── overfishing_agent.py    # Sustainability analysis & policy RAG
+│   ├── orchestrator.py         # Routes requests to agents
+│   ├── fisheries_agent.py      # Biology-focused Agentic RAG
+│   └── overfishing_agent.py    # Policy-focused Agentic RAG
 │
-├── services/                   # Core ML Logic & Services
-│   ├── fish_classifier.py      # Species classification logic
+├── services/                   # Core ML Logic
+│   ├── fish_classifier.py      # EfficientNet-B0 inference
 │   ├── predict.py              # Chlorophyll prediction
 │   ├── sst_predict.py          # SST forecasting
-│   └── overfishing_analyze.py  # Stock vs Catch analysis
+│   └── overfishing_analyze.py  # Stock vs catch analysis
 │
-├── rag/                        # RAG System
-│   ├── rag_engine.py           # Main RAG interface
-│   ├── database/               # Vector Stores (ChromaDB)
+├── rag/                        # RAG Infrastructure
+│   ├── rag_engine.py           # RAG interface
+│   ├── database/               # ChromaDB vector stores
 │   │   ├── fisheries/
 │   │   └── overfishing/
-│   ├── scripts/                # Database Build Scripts
+│   ├── scripts/                # DB build scripts
 │   │   ├── build_rag_db.py
 │   │   └── build_overfishing_db.py
-│   └── src/                    # RAG Core Components
+│   └── src/
 │       ├── data_loader.py
 │       ├── embedding.py
 │       └── vectorstore.py
 │
-├── models/                     # Trained Model Artifacts
+├── models/                     # Trained artifacts
 │   ├── fish_classifier.pth
 │   ├── chlorophyll_rf_model.pkl
 │   └── labels.json
 │
 ├── requirements.txt
 └── README.md
-```
 
----
+📈 Impact & Performance
 
-## 🤖 Agentic AI Workflows
+⏱️ Efficiency: 80% reduction in manual analysis
+(weeks → <10 seconds)
 
-### 1️⃣ Ocean Intelligence Agent 🌊
-Analyzes SST, salinity, pH, chlorophyll, and depth profiles.
-- **Capabilities**:
-  - Detect ocean stress and anomalies
-  - Explain climate impact using RAG knowledge
-  - Generate insights for marine health
+🎯 Accuracy: 28% boost via RAG-grounded reasoning
 
-### 2️⃣ Fisheries Agent 🐟
-Analyzes fish stock vs catch data and overfishing patterns.
-- **Capabilities**:
-  - Detect overfishing risk
-  - Interpret ML forecasting results
-  - Recommend sustainable fishing strategies using RAG
+💰 Economic ROI: Prevents vessel seizures & fines
+(₹2,000+ / $2,500+ per incident)
 
-## 📚 RAG (Retrieval-Augmented Generation)
-
-Marine Insights uses a partitioned knowledge base built on **ChromaDB**.
-
-**Knowledge Domains:**
-- Oceanography & Climate Science
-- Fisheries & Sustainability Policies
-- Marine Biodiversity & Ecology
-- Environmental Regulations
-
-**RAG Pipeline:**
-> Query → Embeddings → Vector Search → Relevant Knowledge → Agent Reasoning → Final Insight
-
----
-
-## ⚙️ How to Run (Local)
-
-### 1️⃣ Activate Virtual Environment
-```bash
+⚙️ Quick Start
+1️⃣ Activate Environment
 source .venv/bin/activate
-# or windows
+# Windows
 .\.venv\Scripts\activate
-```
 
-### 2️⃣ Run Backend Server
-```bash
+2️⃣ Configure AWS Credentials
+export AWS_DEFAULT_REGION="us-east-1"
+export AWS_ROLE_ARN="arn:aws:iam::<ACC_ID>:role/hackathon-bedrock-kb-role"
+
+3️⃣ Launch Backend
 uvicorn main:app --reload
-```
 
-### 3️⃣ Access API
-- **Base URL**: `http://127.0.0.1:8000`
-- **Swagger Docs**: `http://127.0.0.1:8000/docs`
+🧠 API Endpoints
+1️⃣ Predict Chlorophyll
 
----
+POST /predict
 
-## 🧠 Available API Endpoints
-
-### 1️⃣ Predict Chlorophyll (Single Input)
-**POST** `/predict`
-
-**Request:**
-```json
 {
   "depth": 10,
   "salinity": 35,
   "ph": 8.1
 }
-```
 
-**Response:**
-```json
-{
-  "predicted_chlorophyll": 0.1787
-}
-```
+2️⃣ CSV Batch Prediction
 
----
+POST /predict/csv
 
-### 2️⃣ Predict Chlorophyll (CSV Upload)
-**POST** `/predict/csv`
-
-**CSV Format:**
-```csv
 depth,salinity,ph
 10,35,8.1
 20,34.8,8.0
-```
 
-**Response:**
-```json
-{
-  "depth": [...],
-  "salinity": [...],
-  "ph": [...],
-  "predicted_chlorophyll": [...]
-}
-```
-*Used for batch prediction and graph plotting in frontend.*
+3️⃣ SST Forecast
 
----
+GET /predict/sst
 
-### 3️⃣ Sea Surface Temperature Forecast
-**GET** `/predict/sst`
+Returns future SST trends for visualization.
 
-**Response:**
-```json
-{
-  "dates": [...],
-  "sst": [...]
-}
-```
-*Returns future SST trend data for visualization.*
+4️⃣ Fish Species Classification
 
----
+POST /predict/fish_species
 
-### 4️⃣ Fish Species Classification (Image Upload)
-**POST** `/predict/fish_species`
+Upload image (JPG | PNG | WebP)
 
-**Description:** Upload an image to classify the fish species using EfficientNet-B0.
-**Classes:** Sea Bass, Red Mullet, Horse Mackerel, Shrimp, etc. (9 classes)
+9 supported species
 
-**Request:**
-- **Method**: POST
-- **Content-Type**: `multipart/form-data`
-- **Body**: Image file (JPG, PNG, WebP)
-
-**Response:**
-```json
 {
   "species": "Sea Bass",
   "confidence": 95.67,
@@ -295,93 +231,31 @@ depth,salinity,ph
     "Red Sea Bream": 1.12
   }
 }
-```
 
-**Usage (cURL):**
-```bash
-curl -X POST "http://localhost:8000/predict/fish_species" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@fish_image.jpg"
-```
-
----
-
-## 🐳 Docker Deployment (Recommended)
-
-### Quick Start
-
-```bash
-# 1. Start Docker Desktop
-open -a Docker
-
-# 2. Deploy with one command
+🐳 Docker Deployment (Recommended)
+Quick Start
 ./deploy.sh
-```
 
-**That's it!** Your application will be live at:
-- **Frontend**: http://localhost
-- **Backend**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
+Services
 
-### Manual Deployment
+Frontend: http://localhost
 
-```bash
-# Build and start services
-docker compose up --build -d
+Backend: http://localhost:8000
 
-# Check status
-docker compose ps
+Docs: http://localhost:8000/docs
 
-# View logs
-docker compose logs -f
+✅ What's Included
 
-# Stop services
-docker compose down
-```
+Production-ready multi-stage Docker builds
 
-### What's Included
+Nginx frontend serving & API proxy
 
-- ✅ **Production-ready** multi-stage builds
-- ✅ **Nginx** for frontend serving with caching
-- ✅ **Health checks** for both services
-- ✅ **API proxying** through Nginx
-- ✅ **Environment variable** management
-- ✅ **Volume caching** for faster rebuilds
+Health checks
 
-### Documentation
+Environment isolation
 
-- **Quick Start**: `DOCKER_QUICK_START.md`
-- **Setup Guide**: `DOCKER_SETUP.md`
-- **Full Documentation**: `DOCKER_DEPLOYMENT.md`
-- **Summary**: `DOCKERIZATION_COMPLETE.md`
+Volume caching
 
-### Common Commands
+© 2026 Team ThinkTank AI
 
-```bash
-# View logs
-docker compose logs -f backend
-docker compose logs -f frontend
-
-# Rebuild after changes
-docker compose up --build -d
-
-# Access container shell
-docker compose exec backend bash
-
-# Remove everything
-docker compose down -v
-```
-
----
-
-## 💻 Local Development (Alternative)
-
-If you prefer running without Docker:
-
----
-
-## 🧩 Notes
-- ✅ **CORS** is enabled for frontend integration
-- ✅ **No authentication** required (Internal API)
-- ✅ **Focus**: Backend handles inference & forecasting; Frontend handles visualization.
+Designed for the AWS Bedrock Hackathon
