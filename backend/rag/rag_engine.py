@@ -1,19 +1,20 @@
 import os
-from groq import Groq
-from rag.src.search import search_context
 
 from dotenv import load_dotenv
+from rag.src.search import search_context
 
 # Load env variables
 load_dotenv()
 
-# Initialize Groq Client
+# Initialize Groq Client (optional)
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
-    # Fallback or error logging
     print("WARNING: GROQ_API_KEY not found in environment variables.")
+    client = None
+else:
+    from groq import Groq
 
-client = Groq(api_key=api_key)
+    client = Groq(api_key=api_key)
 
 def generate_fisheries_insight(user_query, collection="fisheries"):
     """
@@ -33,6 +34,12 @@ def generate_fisheries_insight(user_query, collection="fisheries"):
     # Build the prompt
     system_prompt = "You are a Marine Biologist Expert. Use the provided scientific context about fish species, biology, and habitats to answer queries."
     full_prompt = f"Context:\n{context}\n\nUser Query: {user_query}"
+
+    if client is None:
+        return (
+            "GROQ_API_KEY is not set; AI insights are disabled. "
+            "Here is the retrieved context instead:\n\n" + str(context)
+        )
 
     # Call Groq API
     chat_completion = client.chat.completions.create(
@@ -67,6 +74,12 @@ def generate_overfishing_insight(user_query, search_query=None):
     # Build the prompt
     system_prompt = "You are a Fisheries Policy and Legal Expert. Use the provided context from FAO reports and legal documents to answer the specific scenario described."
     full_prompt = f"Context:\n{context}\n\nScenario & Query: {user_query}"
+
+    if client is None:
+        return (
+            "GROQ_API_KEY is not set; AI insights are disabled. "
+            "Here is the retrieved context instead:\n\n" + str(context)
+        )
 
     # Call Groq API
     chat_completion = client.chat.completions.create(

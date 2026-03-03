@@ -1,7 +1,7 @@
 // Centralized API helper for backend integration
-// Uses Vite env var VITE_API_BASE; falls back to empty string (relative path) for proxy support
+// Uses Vite env var VITE_API_BASE; falls back to '/api' to work with Vite proxy.
 
-export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE || '';
+export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE || '/api';
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
 
