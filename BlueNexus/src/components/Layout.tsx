@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-semibold tracking-tight text-white group-hover:text-cyan-100 transition-colors">
-                Marine Insights
+                BlueNexus
               </span>
             </div>
           </Link>

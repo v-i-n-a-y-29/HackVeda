@@ -8,8 +8,8 @@ Your HackVeda Ocean Intelligence application is now fully Dockerized and ready t
 
 1. **`docker-compose.yml`** - Orchestrates both frontend and backend services
 2. **`backend/Dockerfile`** - Backend container configuration
-3. **`Marine-Insights/Dockerfile`** - Frontend container configuration (multi-stage build)
-4. **`Marine-Insights/nginx.conf`** - Nginx configuration for production serving
+3. **`BlueNexus/Dockerfile`** - Frontend container configuration (multi-stage build)
+4. **`BlueNexus/nginx.conf`** - Nginx configuration for production serving
 5. **`.dockerignore`** files - Optimize build contexts
 6. **`.env.example`** - Template for environment variables
 
@@ -198,7 +198,7 @@ docker compose up -d
 ```bash
 # Build and push images
 docker build -t gcr.io/PROJECT/backend ./backend
-docker build -t gcr.io/PROJECT/frontend ./Marine-Insights
+docker build -t gcr.io/PROJECT/frontend ./BlueNexus
 docker push gcr.io/PROJECT/backend
 docker push gcr.io/PROJECT/frontend
 ```

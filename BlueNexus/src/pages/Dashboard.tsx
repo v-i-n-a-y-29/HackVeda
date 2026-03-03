@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
       >
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-2">
-          MARINE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">INSIGHTS</span>
+          BLUE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">NEXUS</span>
         </h1>
         <p className="text-lg text-white/50 max-w-lg mx-auto font-light leading-relaxed">
           Select a module to begin analysis.

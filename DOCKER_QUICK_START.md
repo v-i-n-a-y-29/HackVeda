@@ -229,7 +229,7 @@ HackVeda/
 │   ├── Dockerfile            # Backend image
 │   ├── .dockerignore         # Exclude files
 │   └── requirements.txt      # Python deps
-└── Marine-Insights/
+└── BlueNexus/
     ├── Dockerfile            # Frontend image
     ├── nginx.conf            # Nginx config
     ├── .dockerignore         # Exclude files

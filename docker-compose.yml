@@ -30,7 +30,7 @@ services:
 
   frontend:
     build:
-      context: ./Marine-Insights
+      context: ./BlueNexus
       dockerfile: Dockerfile
     container_name: hackveda-frontend
     ports:

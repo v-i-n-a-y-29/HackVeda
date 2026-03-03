@@ -1,4 +1,4 @@
-# 🌊 Marine Insights  
+# 🌊 BlueNexus  
 ## Unified Ocean Intelligence through Multi-Agent AI & Retrieval-Augmented Generation
 
 **Team ThinkTank AI**  
@@ -8,7 +8,7 @@ Shubhangi Dimri · Vinay Semwal · Ananya Karn · Mridul Rawat
 
 ## 🚀 Overview
 
-Marine Insights is a **production-grade Ocean Intelligence System** that bridges the gap between **raw marine telemetry** and **actionable intelligence**.
+BlueNexus is a **production-grade Ocean Intelligence System** that bridges the gap between **raw marine telemetry** and **actionable intelligence**.
 
 By integrating **Machine Learning**, **Agentic AI**, and **Serverless RAG on AWS Bedrock**, the platform transforms fragmented ocean data into a **unified decision-support system** for fishermen, researchers, and regulators.
 
@@ -17,7 +17,7 @@ By integrating **Machine Learning**, **Agentic AI**, and **Serverless RAG on AWS
 ## 🧠 The ThinkTank AI Vision
 
 Traditional models only predict numbers.  
-**Marine Insights adds an intelligence layer.**
+**BlueNexus adds an intelligence layer.**
 
 ---
 
